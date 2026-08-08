@@ -178,7 +178,7 @@ export default function AdminProducts() {
 
     const payload = {
       name,
-      category_id: categoryId ? parseInt(categoryId) : None,
+      category_id: categoryId ? parseInt(categoryId) : null,
       description,
       cost_price: parseFloat(costPrice) || 0,
       selling_price: parseFloat(sellingPrice) || 0,
