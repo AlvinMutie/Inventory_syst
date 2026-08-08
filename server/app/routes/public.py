@@ -1,0 +1,70 @@
+from flask import Blueprint, request, jsonify, current_app
+from app.models import Product, Category, Size, Colour
+
+public_bp = Blueprint('public', __name__, url_prefix='/api/v1/public')
+
+@public_bp.route('/store-info', methods=['GET'])
+def get_store_info():
+    return jsonify({
+        'business_name': "Kids Clothing Store",
+        'currency': current_app.config.get('CURRENCY', 'KSh'),
+        'whatsapp_phone': current_app.config.get('WHATSAPP_PHONE', '254700000000')
+    }), 200
+
+@public_bp.route('/categories', methods=['GET'])
+def get_categories():
+    categories = Category.query.order_by(Category.name.asc()).all()
+    return jsonify({'categories': [c.to_dict() for c in categories]}), 200
+
+@public_bp.route('/products', methods=['GET'])
+def get_public_products():
+    category_slug = request.args.get('category')
+    search_query = request.args.get('search')
+    size_name = request.args.get('size')
+    featured_only = request.args.get('featured') == 'true'
+
+    query = Product.query.filter_by(is_published=True)
+
+    if category_slug:
+        query = query.join(Category).filter(Category.slug == category_slug)
+
+    if search_query:
+        query = query.filter(Product.name.ilike(f"%{search_query}%"))
+
+    if featured_only:
+        query = query.filter_by(is_featured=True)
+
+    products = query.order_by(Product.created_at.desc()).all()
+
+    # Filter out products if size filter applied
+    result = []
+    for p in products:
+        p_dict = p.to_dict(include_variants=True)
+        if size_name:
+            # Check if any variant matching size exists and has available stock
+            matching = [v for v in p_dict['variants'] if v['size_name'] == size_name and v['available_quantity'] > 0]
+            if not matching:
+                continue
+        result.append(p_dict)
+
+    return jsonify({
+        'products': result,
+        'count': len(result)
+    }), 200
+
+@public_bp.route('/products/<slug>', methods=['GET'])
+def get_product_by_slug(slug):
+    product = Product.query.filter_by(slug=slug, is_published=True).first()
+    if not product:
+        return jsonify({'error': 'Product not found'}), 404
+    
+    return jsonify({'product': product.to_dict(include_variants=True)}), 200
+
+@public_bp.route('/attributes', methods=['GET'])
+def get_public_attributes():
+    sizes = Size.query.order_by(Size.display_order.asc()).all()
+    colours = Colour.query.order_by(Colour.name.asc()).all()
+    return jsonify({
+        'sizes': [s.to_dict() for s in sizes],
+        'colours': [c.to_dict() for c in colours]
+    }), 200

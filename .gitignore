@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+server/.venv/
+venv/
+ENV/
+env/
+*.db
+*.sqlite3
+
+# Node / Frontend
+client/node_modules/
+client/dist/
+client/.vite/
+
+# Environment Variables
+.env
+server/.env
+*.env.local
+
+# IDE & System
+.vscode/
+.idea/
+.DS_Store
+*.log
