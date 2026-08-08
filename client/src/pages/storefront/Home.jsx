@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Sparkles, CheckCircle2, MessageCircle, Heart } from 'lucide-react';
+import { ArrowRight, Sparkles, CheckCircle2, MessageCircle, Heart, ShoppingBag } from 'lucide-react';
 import api from '../../services/api';
 
 export default function Home() {
