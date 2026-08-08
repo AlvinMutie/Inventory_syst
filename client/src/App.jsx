@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import api from './services/api';
 
 // Storefront components & pages
-import Navbar from './components/storefront/Navbar';
+import CustomerSidebar from './components/storefront/CustomerSidebar';
+import CustomerMobileTopbar from './components/storefront/CustomerMobileTopbar';
 import Footer from './components/storefront/Footer';
 import Home from './pages/storefront/Home';
 import Catalog from './pages/storefront/Catalog';
@@ -18,17 +20,32 @@ import AdminInventory from './pages/admin/AdminInventory';
 import AdminSales from './pages/admin/AdminSales';
 import AdminReports from './pages/admin/AdminReports';
 
-// Public Layout Wrapper
+// Public Layout Wrapper with Side Navigation Panel
 function PublicLayout({ children }) {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [storeInfo, setStoreInfo] = useState({ whatsapp_phone: '254700000000' });
+
+  useEffect(() => {
+    api.get('/public/store-info').then(res => setStoreInfo(res.data)).catch(() => {});
+  }, []);
+
   return (
-    <div className="min-h-screen flex flex-col justify-between bg-slate-50">
-      <div>
-        <Navbar />
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {children}
-        </main>
+    <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row">
+      {/* Side Navigation Panel */}
+      <CustomerSidebar mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />
+
+      {/* Main Area Offset on Desktop */}
+      <div className="md:ml-72 flex-1 flex flex-col justify-between min-h-screen">
+        <div>
+          {/* Mobile Top Header */}
+          <CustomerMobileTopbar onOpenMenu={() => setMobileOpen(true)} storeInfo={storeInfo} />
+          
+          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            {children}
+          </main>
+        </div>
+        <Footer />
       </div>
-      <Footer />
     </div>
   );
 }
