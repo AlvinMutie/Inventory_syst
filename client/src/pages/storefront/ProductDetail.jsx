@@ -131,6 +131,10 @@ export default function ProductDetail() {
             <img
               src={selectedImage || product.primary_image || 'https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=800&auto=format&fit=crop&q=80'}
               alt={product.name}
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = 'https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=800&auto=format&fit=crop&q=80';
+              }}
               className="w-full h-full object-cover"
             />
           </div>

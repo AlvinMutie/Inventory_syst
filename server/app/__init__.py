@@ -27,6 +27,14 @@ def create_app(config_class=Config):
     app.register_blueprint(sales_bp)
     app.register_blueprint(dashboard_bp)
 
+    # Static route for uploads
+    import os
+    from flask import send_from_directory
+    @app.route('/uploads/<path:filename>')
+    def serve_uploads(filename):
+        uploads_dir = os.path.join(app.root_path, 'static', 'uploads')
+        return send_from_directory(uploads_dir, filename)
+
     # CLI command for DB seeding
     @app.cli.command("seed-db")
     def seed_db_command():
