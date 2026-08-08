@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Package, Boxes, ShoppingCart, BarChart3, LogOut, Store, ShieldCheck } from 'lucide-react';
+import { LayoutDashboard, Package, Boxes, ShoppingCart, BarChart3, LogOut, Store, ShieldCheck, Menu, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export default function AdminLayout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [mobileAdminMenuOpen, setMobileAdminMenuOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -26,7 +27,7 @@ export default function AdminLayout() {
       <aside className="w-full md:w-64 bg-slate-900 text-slate-300 flex flex-col justify-between shrink-0">
         <div>
           {/* Admin Header */}
-          <div className="p-5 border-b border-slate-800 flex items-center justify-between">
+          <div className="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <div className="w-9 h-9 rounded-xl bg-rose-500 flex items-center justify-center text-white shadow-md">
                 <ShieldCheck className="w-5 h-5" />
@@ -36,15 +37,25 @@ export default function AdminLayout() {
                 <span className="text-[10px] text-rose-400 font-medium uppercase tracking-wider">Admin Portal</span>
               </div>
             </div>
+
+            {/* Mobile Hamburger Toggle */}
+            <button
+              onClick={() => setMobileAdminMenuOpen(!mobileAdminMenuOpen)}
+              className="md:hidden p-2 text-slate-400 hover:text-white rounded-lg"
+              aria-label="Toggle admin menu"
+            >
+              {mobileAdminMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
           </div>
 
-          {/* Navigation Links */}
-          <nav className="p-3 space-y-1">
+          {/* Navigation Links - Desktop & Mobile Drawer */}
+          <nav className={`p-3 space-y-1 ${mobileAdminMenuOpen ? 'block' : 'hidden md:block'}`}>
             {navItems.map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}
                 end={item.end}
+                onClick={() => setMobileAdminMenuOpen(false)}
                 className={({ isActive }) =>
                   `flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
                     isActive
@@ -61,7 +72,7 @@ export default function AdminLayout() {
         </div>
 
         {/* Sidebar Footer */}
-        <div className="p-4 border-t border-slate-800 space-y-3">
+        <div className={`p-4 border-t border-slate-800 space-y-3 ${mobileAdminMenuOpen ? 'block' : 'hidden md:block'}`}>
           <Link
             to="/"
             target="_blank"

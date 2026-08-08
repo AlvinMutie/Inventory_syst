@@ -1,12 +1,12 @@
-# Children's Clothing Inventory & Social-Commerce System 👶🛍️
+# Children's Clothing Inventory & Social-Commerce System
 
 A production-ready inventory management and mobile-first storefront built specifically for children's clothing social-commerce businesses selling through **Instagram, TikTok, WhatsApp**, and direct sales.
 
-> ⚠️ **IMPORTANT BUSINESS RULE**: This system contains **ZERO online payment processing integration** (No Stripe, No M-Pesa API, No PayPal). Payments happen externally (Cash/M-Pesa Direct) and sales are recorded manually by the business owner.
+> **IMPORTANT BUSINESS RULE**: This system contains **ZERO online payment processing integration** (No Stripe, No M-Pesa API, No PayPal). Payments happen externally (Cash/M-Pesa Direct) and sales are recorded manually by the business owner.
 
 ---
 
-## 🌟 Key Features
+## Key Features
 
 ### 1. Public Storefront (Mobile-First)
 * **Mobile-Optimized Catalogue**: High-density product display for customers visiting from social media links.
@@ -25,7 +25,7 @@ A production-ready inventory management and mobile-first storefront built specif
 
 ---
 
-## 🏗️ Technology Stack
+## Technology Stack
 
 * **Frontend**: React 18, Vite, Tailwind CSS v4, Lucide Icons, React Router DOM, Axios.
 * **Backend**: Python 3.11+, Flask REST API, Flask-SQLAlchemy (ORM), Flask-JWT-Extended, Flask-Cors.
@@ -34,7 +34,7 @@ A production-ready inventory management and mobile-first storefront built specif
 
 ---
 
-## 🛠️ Local Development Setup
+## Local Development Setup
 
 ### 1. Clone & Set Up Backend
 
@@ -78,7 +78,7 @@ The web application will open on `http://localhost:3000`.
 
 ---
 
-## 🧪 Running Automated Tests
+## Running Automated Tests
 
 Run backend unit tests verifying authentication, product matrix creation, stock decrements, and reservation conversions:
 
@@ -88,7 +88,7 @@ PYTHONPATH=server ./server/.venv/bin/pytest server/tests/test_api.py -v
 
 ---
 
-## 🌐 Zero-Cost Hosting Deployment Guide
+## Zero-Cost Hosting Deployment Guide
 
 This system is designed to be hosted with **$0 monthly infrastructure cost**:
 
@@ -101,6 +101,6 @@ This system is designed to be hosted with **$0 monthly infrastructure cost**:
 
 ---
 
-## 📜 Repository
+## Repository
 
 * **GitHub Repository**: [https://github.com/AlvinMutie/Inventory_syst.git](https://github.com/AlvinMutie/Inventory_syst.git)

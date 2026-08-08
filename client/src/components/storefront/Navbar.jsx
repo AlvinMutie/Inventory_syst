@@ -96,11 +96,53 @@ export default function Navbar() {
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="md:hidden p-2 text-slate-700 hover:text-rose-600 rounded-lg"
+              aria-label="Toggle navigation menu"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
+
+        {/* Mobile Expanded Menu Drawer */}
+        {mobileMenuOpen && (
+          <div className="md:hidden py-3 border-t border-slate-100 space-y-3 animate-in fade-in slide-in-from-top-2">
+            <form onSubmit={handleSearchSubmit} className="relative">
+              <input
+                type="text"
+                placeholder="Search hoodies, tracksuits, t-shirts..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full pl-9 pr-4 py-2 text-xs bg-slate-100 border border-slate-200 rounded-xl focus:bg-white focus:border-rose-400 outline-hidden"
+              />
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+            </form>
+
+            <div className="flex flex-col gap-1 text-xs font-semibold pt-1">
+              <Link
+                to="/"
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-3 py-2 rounded-lg hover:bg-slate-100 text-slate-800"
+              >
+                Home
+              </Link>
+              <Link
+                to="/products"
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-3 py-2 rounded-lg hover:bg-slate-100 text-slate-800"
+              >
+                Browse Catalogue
+              </Link>
+              <Link
+                to="/admin"
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-3 py-2 rounded-lg hover:bg-rose-50 text-rose-600 font-bold flex items-center gap-1.5"
+              >
+                <ShieldCheck className="w-4 h-4" />
+                <span>Admin Dashboard</span>
+              </Link>
+            </div>
+          </div>
+        )}
 
         {/* Mobile Search & Categories Pill Bar */}
         <div className="py-2 overflow-x-auto scrollbar-none flex items-center gap-2 border-t border-slate-100 text-xs font-medium">
