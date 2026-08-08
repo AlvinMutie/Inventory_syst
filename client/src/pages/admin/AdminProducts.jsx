@@ -27,6 +27,29 @@ export default function AdminProducts() {
   const [isFeatured, setIsFeatured] = useState(false);
   const [imageUrlInput, setImageUrlInput] = useState('');
   const [images, setImages] = useState([]);
+  const [uploadingImage, setUploadingImage] = useState(false);
+
+  const handleFileSelect = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    setUploadingImage(true);
+    try {
+      const response = await api.post('/admin/products/upload-image', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      if (response.data && response.data.url) {
+        setImages(prev => [...prev, { url: response.data.url, is_primary: prev.length === 0 }]);
+      }
+    } catch (err) {
+      alert("Failed to upload image file. Please try again.");
+    } finally {
+      setUploadingImage(false);
+    }
+  };
 
   // Matrix Builder Selection State
   const [selectedSizeIds, setSelectedSizeIds] = useState([]);
@@ -459,24 +482,41 @@ export default function AdminProducts() {
               {/* Product Images */}
               <div className="space-y-2 border-t border-slate-100 pt-3">
                 <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">
-                  Product Image URLs
+                  Product Images (Upload Photo or Enter URL)
                 </label>
-                <div className="flex gap-2">
-                  <input
-                    type="url"
-                    placeholder="https://..."
-                    value={imageUrlInput}
-                    onChange={(e) => setImageUrlInput(e.target.value)}
-                    className="flex-1 px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl outline-hidden"
-                  />
-                  <button
-                    type="button"
-                    onClick={handleAddImage}
-                    className="px-3 py-1.5 bg-slate-900 text-white font-bold text-xs rounded-xl hover:bg-slate-800"
-                  >
-                    Add Image
-                  </button>
+                
+                {/* File Upload Input */}
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <label className="flex-1 cursor-pointer bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold px-3 py-2 rounded-xl text-xs border border-rose-200 flex items-center justify-center gap-2 transition-colors">
+                    <ImageIcon className="w-4 h-4" />
+                    <span>{uploadingImage ? 'Uploading photo...' : 'Choose Photo from Device'}</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileSelect}
+                      disabled={uploadingImage}
+                      className="hidden"
+                    />
+                  </label>
+
+                  <div className="flex-1 flex gap-2">
+                    <input
+                      type="url"
+                      placeholder="Or paste image URL..."
+                      value={imageUrlInput}
+                      onChange={(e) => setImageUrlInput(e.target.value)}
+                      className="flex-1 px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl outline-hidden"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAddImage}
+                      className="px-3 py-1.5 bg-slate-900 text-white font-bold text-xs rounded-xl hover:bg-slate-800"
+                    >
+                      Add URL
+                    </button>
+                  </div>
                 </div>
+
                 <div className="flex flex-wrap gap-2 pt-2">
                   {images.map((img, i) => (
                     <div key={i} className="relative w-16 h-16 rounded-xl border overflow-hidden">

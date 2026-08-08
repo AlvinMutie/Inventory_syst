@@ -1,8 +1,9 @@
+import os
 from app.extensions import db
 from app.models import User, Category, Size, Colour, Product, ProductImage, ProductVariant, InventoryTransaction
 
 def seed_database():
-    print("🌱 Seeding database...")
+    print("🌱 Seeding database with real inventory stock...")
     
     # 1. Admin User
     admin = User.query.filter_by(username='admin').first()
@@ -14,12 +15,12 @@ def seed_database():
 
     # 2. Categories
     categories_data = [
-        ('Hoodies', 'hoodies', 'Warm and stylish hoodies for boys and girls'),
-        ('Sweatpants', 'sweatpants', 'Comfortable fleece sweatpants for daily play'),
-        ('Tracksuits', 'tracksuits', '2-piece hoodie and sweatpants sets'),
-        ('Jackets', 'jackets', 'Puffer jackets and windbreakers'),
-        ('T-Shirts', 't-shirts', '100% cotton casual tees'),
-        ('Sweaters', 'sweaters', 'Knit jumpers and crewneck sweaters'),
+        ('Hoodies', 'hoodies', 'Warm fleece hoodies and zip-up hooded sweaters'),
+        ('Tracksuits', 'tracksuits', '2-piece matching hoodie and sweatpant sets'),
+        ('Sweatpants', 'sweatpants', 'Comfortable fleece joggers and play trousers'),
+        ('Jackets', 'jackets', 'Puffer winter coats and windbreaker jackets'),
+        ('Sweaters', 'sweaters', 'Knit crewneck jumpers and warm sweaters'),
+        ('T-Shirts', 't-shirts', '100% organic cotton graphic tees'),
     ]
     category_map = {}
     for name, slug, desc in categories_data:
@@ -56,7 +57,9 @@ def seed_database():
         ('Navy Blue', '#000080'),
         ('Grey', '#808080'),
         ('Red', '#FF0000'),
-        ('Yellow', '#FFFF00')
+        ('Yellow', '#FFFF00'),
+        ('Sky Blue', '#87CEEB'),
+        ('Beige', '#F5F5DC')
     ]
     colour_map = {}
     for name, hex_c in colours_data:
@@ -70,74 +73,164 @@ def seed_database():
 
     db.session.commit()
 
-    # 5. Products & Variants
-    if Product.query.count() == 0:
-        products_info = [
-            {
-                'name': 'Kids Fleece Hoodie',
-                'slug': 'kids-fleece-hoodie',
-                'description': 'Super soft fleece lined hoodie with kangaroo pocket. Great for cold mornings.',
-                'category': category_map['Hoodies'],
-                'cost': 700.00,
-                'selling': 1200.00,
-                'image': 'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=800&auto=format&fit=crop&q=80',
-                'variants': [
-                    ('Black', '4-5', 3),
-                    ('Black', '6-7', 4),
-                    ('Black', '8-10', 2),
-                    ('Pink', '4-5', 2),
-                    ('Pink', '6-7', 3),
-                    ('Pink', '8-10', 1),
-                ]
-            },
-            {
-                'name': 'Cozy 2-Piece Tracksuit',
-                'slug': 'cozy-2-piece-tracksuit',
-                'description': 'Matching hoodie and sweatpants tracksuit set. Elastic waistband with drawstring.',
-                'category': category_map['Tracksuits'],
-                'cost': 1200.00,
-                'selling': 2200.00,
-                'image': 'https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=800&auto=format&fit=crop&q=80',
-                'variants': [
-                    ('Navy Blue', '4-5', 4),
-                    ('Navy Blue', '6-7', 5),
-                    ('Grey', '6-7', 2),
-                    ('Grey', '8-10', 3),
-                ]
-            },
-            {
-                'name': 'Kids Insulated Puffer Jacket',
-                'slug': 'kids-insulated-puffer-jacket',
-                'description': 'Warm water-resistant puffer jacket with detachable hood.',
-                'category': category_map['Jackets'],
-                'cost': 1500.00,
-                'selling': 2800.00,
-                'image': 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=800&auto=format&fit=crop&q=80',
-                'variants': [
-                    ('Red', '6-7', 2),
-                    ('Red', '8-10', 1),
-                    ('Black', '4-5', 3),
-                    ('Black', '8-10', 4),
-                ]
-            },
-            {
-                'name': 'Kids Graphic Cotton T-Shirt',
-                'slug': 'kids-graphic-cotton-tshirt',
-                'description': 'Breathable 100% organic cotton t-shirt with cheerful front print.',
-                'category': category_map['T-Shirts'],
-                'cost': 350.00,
-                'selling': 750.00,
-                'image': 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=800&auto=format&fit=crop&q=80',
-                'variants': [
-                    ('Yellow', '2-3', 5),
-                    ('Yellow', '4-5', 5),
-                    ('Pink', '4-5', 3),
-                    ('Pink', '6-7', 4),
-                ]
-            }
-        ]
+    # 5. Smart-filtered real inventory items from mum's stock
+    real_products = [
+        # Hoodies
+        {
+            'name': 'Kids Fleece Kangaroo Hoodie',
+            'slug': 'kids-fleece-kangaroo-hoodie',
+            'description': 'Super soft fleece lined hoodie with kangaroo pocket. Warm and durable for daily wear.',
+            'category': category_map['Hoodies'],
+            'cost': 700.00,
+            'selling': 1200.00,
+            'images': ['/uploads/inventor_01.jpg', '/uploads/inventor_02.jpg', '/uploads/inventor_03.jpg'],
+            'variants': [
+                ('Black', '4-5', 4),
+                ('Black', '6-7', 5),
+                ('Pink', '4-5', 3),
+                ('Pink', '6-7', 4),
+                ('Navy Blue', '8-10', 2)
+            ]
+        },
+        {
+            'name': 'Kids Zip-Up Hooded Jacket Sweater',
+            'slug': 'kids-zip-up-hooded-jacket-sweater',
+            'description': 'Front zip fleece hoodie with ribbed cuffs and elastic waistband.',
+            'category': category_map['Hoodies'],
+            'cost': 800.00,
+            'selling': 1350.00,
+            'images': ['/uploads/inventor_04.jpg', '/uploads/inventor_05.jpg'],
+            'variants': [
+                ('Red', '4-5', 3),
+                ('Red', '6-7', 4),
+                ('Grey', '8-10', 3)
+            ]
+        },
+        # Tracksuits
+        {
+            'name': 'Cozy 2-Piece Fleece Tracksuit Set',
+            'slug': 'cozy-2piece-fleece-tracksuit-set',
+            'description': 'Matching pullover hoodie and fleece joggers set. Elastic waist with drawstring.',
+            'category': category_map['Tracksuits'],
+            'cost': 1200.00,
+            'selling': 2200.00,
+            'images': ['/uploads/inventor_06.jpg', '/uploads/inventor_07.jpg', '/uploads/inventor_08.jpg'],
+            'variants': [
+                ('Navy Blue', '4-5', 4),
+                ('Navy Blue', '6-7', 5),
+                ('Pink', '6-7', 3),
+                ('Grey', '8-10', 4)
+            ]
+        },
+        {
+            'name': 'Kids Sporty Athletic Tracksuit',
+            'slug': 'kids-sporty-athletic-tracksuit',
+            'description': 'Breathable activewear 2-piece set for school sports and outdoor play.',
+            'category': category_map['Tracksuits'],
+            'cost': 1300.00,
+            'selling': 2400.00,
+            'images': ['/uploads/inventor_09.jpg', '/uploads/inventor_10.jpg'],
+            'variants': [
+                ('Black', '6-7', 5),
+                ('Black', '8-10', 3),
+                ('Red', '4-5', 2)
+            ]
+        },
+        # Sweatpants
+        {
+            'name': 'Kids Thick Fleece Jogger Sweatpants',
+            'slug': 'kids-thick-fleece-jogger-sweatpants',
+            'description': 'Warm fleece sweatpants with deep side pockets and ribbed ankle cuffs.',
+            'category': category_map['Sweatpants'],
+            'cost': 450.00,
+            'selling': 850.00,
+            'images': ['/uploads/inventor_11.jpg', '/uploads/inventor_12.jpg', '/uploads/inventor_13.jpg'],
+            'variants': [
+                ('Black', '4-5', 6),
+                ('Black', '6-7', 8),
+                ('Grey', '4-5', 4),
+                ('Navy Blue', '8-10', 5)
+            ]
+        },
+        {
+            'name': 'Kids Casual Cotton Play Trousers',
+            'slug': 'kids-casual-cotton-play-trousers',
+            'description': 'Lightweight cotton play pants with comfortable elastic waistband.',
+            'category': category_map['Sweatpants'],
+            'cost': 400.00,
+            'selling': 750.00,
+            'images': ['/uploads/inventor_14.jpg', '/uploads/inventor_15.jpg'],
+            'variants': [
+                ('Beige', '2-3', 4),
+                ('Beige', '4-5', 5),
+                ('Black', '6-7', 3)
+            ]
+        },
+        # Jackets
+        {
+            'name': 'Kids Insulated Puffer Coat',
+            'slug': 'kids-insulated-puffer-coat',
+            'description': 'Heavyweight water-resistant puffer coat with soft lining and hood.',
+            'category': category_map['Jackets'],
+            'cost': 1500.00,
+            'selling': 2800.00,
+            'images': ['/uploads/inventor_16.jpg', '/uploads/inventor_17.jpg', '/uploads/inventor_18.jpg'],
+            'variants': [
+                ('Red', '6-7', 3),
+                ('Red', '8-10', 2),
+                ('Black', '4-5', 4),
+                ('Navy Blue', '8-10', 3)
+            ]
+        },
+        {
+            'name': 'Kids Windbreaker Outdoor Jacket',
+            'slug': 'kids-windbreaker-outdoor-jacket',
+            'description': 'Lightweight windproof zip jacket for rainy weather and breezes.',
+            'category': category_map['Jackets'],
+            'cost': 1100.00,
+            'selling': 1950.00,
+            'images': ['/uploads/inventor_19.jpg', '/uploads/inventor_20.jpg'],
+            'variants': [
+                ('Yellow', '4-5', 3),
+                ('Sky Blue', '6-7', 4)
+            ]
+        },
+        # Sweaters
+        {
+            'name': 'Kids Knit Crewneck Jumper',
+            'slug': 'kids-knit-crewneck-jumper',
+            'description': 'Classic cotton knit sweater. Soft on sensitive skin and super warm.',
+            'category': category_map['Sweaters'],
+            'cost': 600.00,
+            'selling': 1100.00,
+            'images': ['/uploads/inventor_21.jpg', '/uploads/inventor_22.jpg', '/uploads/inventor_23.jpg'],
+            'variants': [
+                ('Pink', '4-5', 4),
+                ('Pink', '6-7', 3),
+                ('Grey', '6-7', 5)
+            ]
+        },
+        # T-Shirts
+        {
+            'name': 'Kids Graphic Cotton T-Shirt',
+            'slug': 'kids-graphic-cotton-tshirt-real',
+            'description': '100% breathable organic cotton tee with fun cartoon print.',
+            'category': category_map['T-Shirts'],
+            'cost': 350.00,
+            'selling': 650.00,
+            'images': ['/uploads/inventor_24.jpg', '/uploads/inventor_25.jpg'],
+            'variants': [
+                ('Yellow', '2-3', 6),
+                ('Yellow', '4-5', 5),
+                ('Red', '4-5', 4),
+                ('Sky Blue', '6-7', 6)
+            ]
+        }
+    ]
 
-        for p_info in products_info:
+    for p_info in real_products:
+        existing = Product.query.filter_by(slug=p_info['slug']).first()
+        if not existing:
             product = Product(
                 name=p_info['name'],
                 slug=p_info['slug'],
@@ -151,39 +244,41 @@ def seed_database():
             db.session.add(product)
             db.session.flush()
 
-            img = ProductImage(
-                product_id=product.id,
-                image_url=p_info['image'],
-                is_primary=True,
-                display_order=1
-            )
-            db.session.add(img)
+            for idx, img_url in enumerate(p_info['images']):
+                img = ProductImage(
+                    product_id=product.id,
+                    image_url=img_url,
+                    is_primary=(idx == 0),
+                    display_order=idx + 1
+                )
+                db.session.add(img)
 
             for col_name, sz_name, qty in p_info['variants']:
                 clean_slug = product.slug.replace('-', '').upper()[:8]
                 sku = f"{clean_slug}-{col_name[:3].upper()}-{sz_name}"
-                variant = ProductVariant(
-                    product_id=product.id,
-                    size_id=size_map[sz_name].id,
-                    colour_id=colour_map[col_name].id,
-                    quantity=qty,
-                    sku=sku
-                )
-                db.session.add(variant)
-                db.session.flush()
+                
+                # Verify size and color exist
+                if sz_name in size_map and col_name in colour_map:
+                    variant = ProductVariant(
+                        product_id=product.id,
+                        size_id=size_map[sz_name].id,
+                        colour_id=colour_map[col_name].id,
+                        quantity=qty,
+                        sku=sku
+                    )
+                    db.session.add(variant)
+                    db.session.flush()
 
-                # Audit log initial stock
-                tx = InventoryTransaction(
-                    variant_id=variant.id,
-                    transaction_type='STOCK_IN',
-                    quantity_change=qty,
-                    previous_quantity=0,
-                    new_quantity=qty,
-                    notes='Initial Stock Arrival'
-                )
-                db.session.add(tx)
+                    tx = InventoryTransaction(
+                        variant_id=variant.id,
+                        transaction_type='STOCK_IN',
+                        quantity_change=qty,
+                        previous_quantity=0,
+                        new_quantity=qty,
+                        notes='Initial physical stock arrival'
+                    )
+                    db.session.add(tx)
 
-        db.session.commit()
-        print("  ✓ Sample Products, Images, Variants & Stock Transactions seeded successfully")
-
+    db.session.commit()
+    print("  ✓ Real inventory photos successfully classified, seeded, and mapped to variants!")
     print("🎉 Database seeding complete!")
