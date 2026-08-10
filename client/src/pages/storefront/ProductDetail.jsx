@@ -193,17 +193,24 @@ export default function ProductDetail() {
                 <div className="flex flex-wrap gap-2">
                   {availableColours.map((colour) => {
                     const isSelected = selectedColour === colour;
+                    const matchVariant = product.variants.find(v => v.colour_name === colour);
+                    const hexCode = matchVariant?.colour_hex || '#cbd5e1';
+
                     return (
                       <button
                         key={colour}
                         onClick={() => setSelectedColour(colour)}
-                        className={`px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-all ${
+                        className={`px-3.5 py-1.5 rounded-full text-xs font-semibold border flex items-center gap-2 transition-all ${
                           isSelected
-                            ? 'bg-rose-500 text-white border-rose-500 shadow-xs'
+                            ? 'bg-rose-500 text-white border-rose-500 shadow-xs font-bold'
                             : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-rose-300'
                         }`}
                       >
-                        {colour}
+                        <span
+                          className="w-3.5 h-3.5 rounded-full border border-black/20 shrink-0 shadow-2xs"
+                          style={{ backgroundColor: hexCode }}
+                        />
+                        <span>{colour}</span>
                       </button>
                     );
                   })}

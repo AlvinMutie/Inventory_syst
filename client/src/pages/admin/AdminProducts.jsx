@@ -632,11 +632,15 @@ export default function AdminProducts() {
                           key={c.id}
                           type="button"
                           onClick={() => handleColourToggle(c.id)}
-                          className={`px-3 py-1 text-xs font-bold rounded-lg border transition-colors ${
+                          className={`px-3 py-1 text-xs font-bold rounded-lg border flex items-center gap-1.5 transition-colors ${
                             active ? 'bg-slate-900 text-white border-slate-900' : 'bg-slate-50 text-slate-700 border-slate-200'
                           }`}
                         >
-                          {c.name}
+                          <span
+                            className="w-3 h-3 rounded-full border border-black/20 shrink-0"
+                            style={{ backgroundColor: c.hex_code || '#cbd5e1' }}
+                          />
+                          <span>{c.name}</span>
                         </button>
                       );
                     })}
