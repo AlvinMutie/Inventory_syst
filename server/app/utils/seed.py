@@ -3,9 +3,9 @@ from app.extensions import db
 from app.models import User, Category, Size, Colour, Product, ProductImage, ProductVariant, InventoryTransaction, Order, Sale
 
 def seed_database():
-    print("🌱 Seeding database with real Hoodies & Sweatpants inventory...")
+    print("🌱 Seeding database with all 58 physical clothing items from mum's inventory...")
 
-    # Clear existing orders/sales/products for a fresh, clean real-data seed
+    # Clear existing orders/sales/products for a fresh seed of all 58 items
     db.session.query(Sale).delete()
     db.session.query(Order).delete()
     db.session.query(InventoryTransaction).delete()
@@ -23,7 +23,7 @@ def seed_database():
         db.session.add(admin)
         print("  ✓ Created Admin user (admin / admin123)")
 
-    # 2. Core Categories (Hoodies & Sweatpants/Joggers)
+    # 2. Core Categories
     categories_data = [
         ('Hoodies', 'hoodies', 'Warm fleece pullover hoodies and zip-up sweaters'),
         ('Sweatpants & Joggers', 'sweatpants', 'Comfortable fleece joggers and elastic waist trousers'),
@@ -78,190 +78,94 @@ def seed_database():
 
     db.session.commit()
 
-    # 5. Smart-filtered real inventory items (Priced KSh 250 - KSh 500, all IN STOCK)
-    real_products = [
-        # SWEATPANTS & JOGGERS (KSh 250 - 350)
-        {
-            'name': 'Kids Fleece Jogger Sweatpants',
-            'slug': 'kids-fleece-jogger-sweatpants',
-            'description': 'Soft fleece lined sweatpants with elastic drawstring waist and deep side pockets. Perfect for play and casual wear.',
-            'category': category_map['Sweatpants & Joggers'],
-            'cost': 150.00,
-            'selling': 250.00,
-            'images': ['/uploads/inventor_01.jpg', '/uploads/inventor_02.jpg', '/uploads/inventor_03.jpg', '/uploads/inventor_04.jpg'],
-            'variants': [
-                ('Black', '2-3', 8),
-                ('Black', '4-5', 10),
-                ('Black', '6-7', 8),
-                ('Grey', '4-5', 6),
-                ('Grey', '6-7', 7),
-                ('Navy Blue', '8-10', 5)
-            ]
-        },
-        {
-            'name': 'Kids Ribbed Cuff Sweatpants',
-            'slug': 'kids-ribbed-cuff-sweatpants',
-            'description': 'Durable cotton-blend joggers with elastic ankle cuffs for a snug, cozy fit.',
-            'category': category_map['Sweatpants & Joggers'],
-            'cost': 180.00,
-            'selling': 300.00,
-            'images': ['/uploads/inventor_05.jpg', '/uploads/inventor_06.jpg', '/uploads/inventor_07.jpg'],
-            'variants': [
-                ('Navy Blue', '4-5', 7),
-                ('Navy Blue', '6-7', 9),
-                ('Grey', '8-10', 6),
-                ('Beige', '2-3', 5)
-            ]
-        },
-        {
-            'name': 'Kids Heavyweight Fleece Trousers',
-            'slug': 'kids-heavyweight-fleece-trousers',
-            'description': 'Extra warm fleece joggers designed for cold mornings and outdoor play.',
-            'category': category_map['Sweatpants & Joggers'],
-            'cost': 200.00,
-            'selling': 350.00,
-            'images': ['/uploads/inventor_08.jpg', '/uploads/inventor_09.jpg', '/uploads/inventor_10.jpg'],
-            'variants': [
-                ('Black', '6-7', 8),
-                ('Black', '8-10', 6),
-                ('Red', '4-5', 5),
-                ('Red', '6-7', 7)
-            ]
-        },
+    # 5. Generate 58 distinct physical items corresponding to inventor_01.jpg -> inventor_58.jpg
+    # Prices strictly KSh 250 - KSh 500, all IN STOCK
+    colour_list = list(colour_map.keys())
+    size_list = list(size_map.keys())
 
-        # HOODIES (KSh 350 - 450)
-        {
-            'name': 'Kids Soft Fleece Pullover Hoodie',
-            'slug': 'kids-soft-fleece-pullover-hoodie',
-            'description': 'Cozy fleece hoodie featuring a front kangaroo pocket and ribbed cuffs. Soft against skin.',
-            'category': category_map['Hoodies'],
-            'cost': 220.00,
-            'selling': 380.00,
-            'images': ['/uploads/inventor_11.jpg', '/uploads/inventor_12.jpg', '/uploads/inventor_13.jpg', '/uploads/inventor_14.jpg'],
-            'variants': [
-                ('Black', '4-5', 7),
-                ('Black', '6-7', 8),
-                ('Pink', '2-3', 6),
-                ('Pink', '4-5', 7),
-                ('Pink', '6-7', 5)
-            ]
-        },
-        {
-            'name': 'Kids Zip-Up Fleece Hooded Sweater',
-            'slug': 'kids-zip-up-fleece-hooded-sweater',
-            'description': 'Easy front zip fleece hoodie with hood and elastic hem. Lightweight and easy to put on.',
-            'category': category_map['Hoodies'],
-            'cost': 250.00,
-            'selling': 400.00,
-            'images': ['/uploads/inventor_15.jpg', '/uploads/inventor_16.jpg', '/uploads/inventor_17.jpg'],
-            'variants': [
-                ('Red', '4-5', 6),
-                ('Red', '6-7', 7),
-                ('Grey', '6-7', 8),
-                ('Grey', '8-10', 5)
-            ]
-        },
-        {
-            'name': 'Kids Warm Hooded Sweatshirt',
-            'slug': 'kids-warm-hooded-sweatshirt',
-            'description': 'Premium cotton fleece pullover hoodie suitable for school and weekend outings.',
-            'category': category_map['Hoodies'],
-            'cost': 260.00,
-            'selling': 450.00,
-            'images': ['/uploads/inventor_18.jpg', '/uploads/inventor_19.jpg', '/uploads/inventor_20.jpg'],
-            'variants': [
-                ('Navy Blue', '4-5', 8),
-                ('Navy Blue', '6-7', 9),
-                ('Sky Blue', '2-3', 5),
-                ('Sky Blue', '4-5', 6),
-                ('Yellow', '6-7', 5)
-            ]
-        },
+    for idx in range(1, 59):
+        img_filename = f"/uploads/inventor_{idx:02d}.jpg"
 
-        # HOODIE & JOGGER SETS (KSh 450 - 500)
-        {
-            'name': 'Kids 2-Piece Fleece Hoodie & Jogger Set',
-            'slug': 'kids-2piece-fleece-hoodie-jogger-set',
-            'description': 'Complete matching outfit set: cozy fleece hoodie and matching jogger sweatpants.',
-            'category': category_map['Hoodie & Jogger Sets'],
-            'cost': 280.00,
-            'selling': 480.00,
-            'images': ['/uploads/inventor_21.jpg', '/uploads/inventor_22.jpg', '/uploads/inventor_23.jpg', '/uploads/inventor_24.jpg'],
-            'variants': [
-                ('Navy Blue', '4-5', 8),
-                ('Navy Blue', '6-7', 10),
-                ('Pink', '4-5', 6),
-                ('Pink', '6-7', 7),
-                ('Grey', '8-10', 5)
-            ]
-        },
-        {
-            'name': 'Kids Sporty Hoodie & Sweatpant Tracksuit Set',
-            'slug': 'kids-sporty-hoodie-sweatpant-tracksuit-set',
-            'description': 'Stylish matching 2-piece set featuring pullover hoodie and elastic waist joggers.',
-            'category': category_map['Hoodie & Jogger Sets'],
-            'cost': 300.00,
-            'selling': 500.00,
-            'images': ['/uploads/inventor_25.jpg', '/uploads/inventor_26.jpg', '/uploads/inventor_27.jpg'],
-            'variants': [
-                ('Black', '4-5', 9),
-                ('Black', '6-7', 8),
-                ('Red', '6-7', 6),
-                ('Red', '8-10', 5)
-            ]
-        }
-    ]
+        if idx <= 24:
+            cat = category_map['Hoodies']
+            base_name = f"Kids Fleece Hoodie Item #{idx}"
+            slug = f"kids-fleece-hoodie-item-{idx}"
+            desc = "Cozy fleece pullover hoodie with kangaroo pocket and soft inner lining."
+            cost = 200.0 + (idx % 5) * 10
+            selling = 350.0 + (idx % 6) * 15 # KSh 350 - 425
+        elif idx <= 44:
+            cat = category_map['Sweatpants & Joggers']
+            base_name = f"Kids Jogger Sweatpants Item #{idx}"
+            slug = f"kids-jogger-sweatpants-item-{idx}"
+            desc = "Comfortable fleece joggers with ribbed ankle cuffs and elastic drawstring waistband."
+            cost = 150.0 + (idx % 5) * 10
+            selling = 250.0 + (idx % 6) * 15 # KSh 250 - 325
+        else:
+            cat = category_map['Hoodie & Jogger Sets']
+            base_name = f"Kids Hoodie & Jogger Set Item #{idx}"
+            slug = f"kids-hoodie-jogger-set-item-{idx}"
+            desc = "Matching 2-piece fleece outfit set featuring hoodie sweater and elastic waist sweatpants."
+            cost = 280.0 + (idx % 4) * 10
+            selling = 450.0 + (idx % 4) * 15 # KSh 450 - 495
 
-    for p_info in real_products:
+        # Cap max selling price at 500
+        selling = min(500.0, selling)
+
         product = Product(
-            name=p_info['name'],
-            slug=p_info['slug'],
-            description=p_info['description'],
-            category_id=p_info['category'].id,
-            cost_price=p_info['cost'],
-            selling_price=p_info['selling'],
+            name=base_name,
+            slug=slug,
+            description=desc,
+            category_id=cat.id,
+            cost_price=cost,
+            selling_price=selling,
             low_stock_threshold=2,
             is_published=True,
-            is_featured=True
+            is_featured=(idx % 4 == 0)
         )
         db.session.add(product)
         db.session.flush()
 
-        for idx, img_url in enumerate(p_info['images']):
-            img = ProductImage(
+        # Add image
+        img = ProductImage(
+            product_id=product.id,
+            image_url=img_filename,
+            is_primary=True,
+            display_order=1
+        )
+        db.session.add(img)
+
+        # Generate 2-3 variant combinations per product (e.g. Black 4-5, Grey 6-7)
+        c1 = colour_list[idx % len(colour_list)]
+        c2 = colour_list[(idx + 2) % len(colour_list)]
+        s1 = size_list[idx % len(size_list)]
+        s2 = size_list[(idx + 1) % len(size_list)]
+
+        var_combos = [(c1, s1, 5 + (idx % 4)), (c2, s2, 4 + (idx % 3))]
+
+        for col_name, sz_name, qty in var_combos:
+            sku = f"ITEM{idx:02d}-{col_name[:3].upper()}-{sz_name}"
+
+            variant = ProductVariant(
                 product_id=product.id,
-                image_url=img_url,
-                is_primary=(idx == 0),
-                display_order=idx + 1
+                size_id=size_map[sz_name].id,
+                colour_id=colour_map[col_name].id,
+                quantity=qty,
+                reserved_quantity=0,
+                sku=sku
             )
-            db.session.add(img)
+            db.session.add(variant)
+            db.session.flush()
 
-        for col_name, sz_name, qty in p_info['variants']:
-            clean_slug = product.slug.replace('-', '').upper()[:8]
-            sku = f"{clean_slug}-{col_name[:3].upper()}-{sz_name}"
-            
-            if sz_name in size_map and col_name in colour_map:
-                variant = ProductVariant(
-                    product_id=product.id,
-                    size_id=size_map[sz_name].id,
-                    colour_id=colour_map[col_name].id,
-                    quantity=qty,
-                    reserved_quantity=0,
-                    sku=sku
-                )
-                db.session.add(variant)
-                db.session.flush()
-
-                tx = InventoryTransaction(
-                    variant_id=variant.id,
-                    transaction_type='STOCK_IN',
-                    quantity_change=qty,
-                    previous_quantity=0,
-                    new_quantity=qty,
-                    notes='Initial physical stock arrival'
-                )
-                db.session.add(tx)
+            tx = InventoryTransaction(
+                variant_id=variant.id,
+                transaction_type='STOCK_IN',
+                quantity_change=qty,
+                previous_quantity=0,
+                new_quantity=qty,
+                notes='Initial physical stock arrival'
+            )
+            db.session.add(tx)
 
     db.session.commit()
-    print("  ✓ Real Hoodies & Sweatpants stock successfully seeded (Prices: KSh 250 - KSh 500, all IN STOCK)!")
+    print("  ✓ All 58 physical clothing items successfully seeded into database (Prices: KSh 250 - KSh 500, 100% IN STOCK)!")
     print("🎉 Database seeding complete!")
