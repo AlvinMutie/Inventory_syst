@@ -20,7 +20,7 @@ export default function Footer() {
               Quality, stylish, and comfortable children's clothing in Kenya. Browse our latest collection of hoodies and sweatpants.
             </p>
             <p className="text-xs text-rose-400 font-medium">
-              Direct order via WhatsApp — Payment external on delivery or pickup.
+              Direct order via WhatsApp: Payment external on delivery or pickup.
             </p>
           </div>
 

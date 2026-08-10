@@ -359,7 +359,7 @@ export default function AdminSales() {
                   <option value="">-- Choose Variant --</option>
                   {variants.map((v) => (
                     <option key={v.id} value={v.id}>
-                      Size {v.size_name} / {v.colour_name} — {currency} {v.selling_price} (Available: {v.available_quantity})
+                      Size {v.size_name} / {v.colour_name} | {currency} {v.selling_price} (Available: {v.available_quantity})
                     </option>
                   ))}
                 </select>

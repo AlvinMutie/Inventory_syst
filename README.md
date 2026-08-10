@@ -6,7 +6,7 @@ A production-ready physical inventory management system and mobile-first online 
 
 ## Importance of the System
 
-Small independent clothing businesses—especially those selling children's fleece hoodies, sweatpants, and joggers—face operational challenges when expanding online:
+Small independent clothing businesses, especially those selling children's fleece hoodies, sweatpants, and joggers, face operational challenges when expanding online:
 
 1. **Catalog Visibility**: Social media feeds (Instagram posts, TikTok videos) move fast, making it difficult for customers to see what physical pieces are currently available in specific sizes and colours.
 2. **Inventory Management Overhead**: Managing physical stock across multiple social channels leads to double-selling, manual customer message back-and-forth, and lost sales.

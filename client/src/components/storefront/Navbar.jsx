@@ -30,7 +30,7 @@ export default function Navbar() {
       {/* Top Banner */}
       <div className="bg-gradient-to-r from-rose-500 via-pink-500 to-rose-400 text-white text-xs py-1.5 px-4 text-center font-medium tracking-wide flex items-center justify-center gap-2">
         <Sparkles className="w-3.5 h-3.5 text-yellow-300 animate-pulse" />
-        <span>Quality Children's Clothing — Direct Order via WhatsApp</span>
+        <span>Quality Children's Clothing: Direct Order via WhatsApp</span>
         <Sparkles className="w-3.5 h-3.5 text-yellow-300 animate-pulse" />
       </div>
 

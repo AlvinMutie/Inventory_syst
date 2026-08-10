@@ -267,7 +267,7 @@ export default function ProductDetail() {
               {isVariantAvailable ? (
                 <div className="inline-flex items-center gap-2 text-emerald-600 font-bold text-xs bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-xl">
                   <CheckCircle2 className="w-4 h-4" />
-                  <span>In Stock — Single piece available ({variantStockCount} item)</span>
+                  <span>In Stock: Single piece available ({variantStockCount} item)</span>
                 </div>
               ) : (
                 <div className="inline-flex items-center gap-2 text-rose-600 font-bold text-xs bg-rose-50 border border-rose-200 px-3 py-1.5 rounded-xl">
@@ -297,7 +297,7 @@ export default function ProductDetail() {
             </a>
 
             <div className="flex items-center justify-between text-[11px] text-slate-500 font-medium px-1">
-              <span>💳 Zero Online Payment — Pay on delivery / pickup</span>
+              <span>Zero Online Payment: Pay on delivery / pickup</span>
               <span>⚡ Direct WhatsApp Chat</span>
             </div>
           </div>

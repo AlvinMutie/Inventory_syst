@@ -51,7 +51,7 @@ export default function CustomerSidebar({ mobileOpen, setMobileOpen }) {
 
           <div className="bg-gradient-to-r from-rose-50 to-pink-50 border border-rose-100 p-2.5 rounded-2xl text-[11px] text-rose-700 font-semibold flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-rose-500 shrink-0 animate-pulse" />
-            <span>Direct WhatsApp Order — No Online Payment Needed</span>
+            <span>Direct WhatsApp Order: No Online Payment Needed</span>
           </div>
         </div>
 
