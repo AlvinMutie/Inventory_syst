@@ -139,8 +139,8 @@ export default function AdminProducts() {
     setName('');
     setCategoryId(categories.length > 0 ? categories[0].id : '');
     setDescription('');
-    setCostPrice(700);
-    setSellingPrice(1200);
+    setCostPrice(200);
+    setSellingPrice(350);
     setThreshold(2);
     setIsPublished(true);
     setIsFeatured(false);
