@@ -1,11 +1,51 @@
-from datetime import datetime, timedelta
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required
 from sqlalchemy import func
 from app.extensions import db
-from app.models import Product, ProductVariant, Order, OrderItem, Sale, Category, InventoryTransaction
+from app.models import Product, ProductVariant, Order, OrderItem, Sale, Category, InventoryTransaction, StoreSetting
 
 dashboard_bp = Blueprint('admin_dashboard', __name__, url_prefix='/api/v1/admin')
+
+@dashboard_bp.route('/store-info', methods=['PUT'])
+@jwt_required()
+def update_store_info():
+    data = request.get_json() or {}
+    
+    business_name = data.get('business_name')
+    whatsapp_phone = data.get('whatsapp_phone')
+    currency = data.get('currency')
+
+    if business_name is not None:
+        setting = StoreSetting.query.filter_by(key='business_name').first()
+        if not setting:
+            setting = StoreSetting(key='business_name', value=business_name.strip())
+            db.session.add(setting)
+        else:
+            setting.value = business_name.strip()
+
+    if whatsapp_phone is not None:
+        setting = StoreSetting.query.filter_by(key='whatsapp_phone').first()
+        if not setting:
+            setting = StoreSetting(key='whatsapp_phone', value=whatsapp_phone.strip())
+            db.session.add(setting)
+        else:
+            setting.value = whatsapp_phone.strip()
+
+    if currency is not None:
+        setting = StoreSetting.query.filter_by(key='currency').first()
+        if not setting:
+            setting = StoreSetting(key='currency', value=currency.strip())
+            db.session.add(setting)
+        else:
+            setting.value = currency.strip()
+
+    db.session.commit()
+    return jsonify({
+        'message': 'Website name and store settings updated successfully',
+        'business_name': business_name,
+        'whatsapp_phone': whatsapp_phone,
+        'currency': currency
+    }), 200
 
 @dashboard_bp.route('/dashboard/stats', methods=['GET'])
 @jwt_required()

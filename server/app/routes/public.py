@@ -1,14 +1,22 @@
 from flask import Blueprint, request, jsonify, current_app
-from app.models import Product, Category, Size, Colour
+from app.models import Product, Category, Size, Colour, StoreSetting
 
 public_bp = Blueprint('public', __name__, url_prefix='/api/v1/public')
 
 @public_bp.route('/store-info', methods=['GET'])
 def get_store_info():
+    name_setting = StoreSetting.query.filter_by(key='business_name').first()
+    phone_setting = StoreSetting.query.filter_by(key='whatsapp_phone').first()
+    currency_setting = StoreSetting.query.filter_by(key='currency').first()
+
+    business_name = name_setting.value if name_setting and name_setting.value else "TinyTrends Kids Wear"
+    whatsapp_phone = phone_setting.value if phone_setting and phone_setting.value else current_app.config.get('WHATSAPP_PHONE', '254700000000')
+    currency = currency_setting.value if currency_setting and currency_setting.value else current_app.config.get('CURRENCY', 'KSh')
+
     return jsonify({
-        'business_name': "Kids Clothing Store",
-        'currency': current_app.config.get('CURRENCY', 'KSh'),
-        'whatsapp_phone': current_app.config.get('WHATSAPP_PHONE', '254700000000')
+        'business_name': business_name,
+        'currency': currency,
+        'whatsapp_phone': whatsapp_phone
     }), 200
 
 @public_bp.route('/categories', methods=['GET'])
@@ -36,12 +44,10 @@ def get_public_products():
 
     products = query.order_by(Product.created_at.desc()).all()
 
-    # Filter out products if size filter applied
     result = []
     for p in products:
         p_dict = p.to_dict(include_variants=True)
         if size_name:
-            # Check if any variant matching size exists and has available stock
             matching = [v for v in p_dict['variants'] if v['size_name'] == size_name and v['available_quantity'] > 0]
             if not matching:
                 continue

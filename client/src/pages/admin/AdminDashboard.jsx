@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Package, Boxes, ShoppingBag, AlertTriangle, TrendingUp, DollarSign, ArrowRight, CheckCircle2, Award } from 'lucide-react';
+import { Package, Boxes, ShoppingBag, AlertTriangle, TrendingUp, DollarSign, ArrowRight, CheckCircle2, Award, Settings, Globe, X } from 'lucide-react';
 import api from '../../services/api';
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [currency, setCurrency] = useState('KSh');
+  
+  // Website Settings Modal State
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [businessName, setBusinessName] = useState('');
+  const [whatsappPhone, setWhatsappPhone] = useState('');
+  const [savingSettings, setSavingSettings] = useState(false);
 
   useEffect(() => {
     const fetchDashboard = async () => {
@@ -16,7 +22,9 @@ export default function AdminDashboard() {
           api.get('/public/store-info')
         ]);
         setStats(dashRes.data);
-        setCurrency(infoRes.data.currency);
+        setCurrency(infoRes.data.currency || 'KSh');
+        setBusinessName(infoRes.data.business_name || 'TinyTrends Kids Wear');
+        setWhatsappPhone(infoRes.data.whatsapp_phone || '254700000000');
       } catch (err) {
         console.error("Dashboard stats error", err);
       } finally {
@@ -25,6 +33,25 @@ export default function AdminDashboard() {
     };
     fetchDashboard();
   }, []);
+
+  const handleSaveSettings = async (e) => {
+    e.preventDefault();
+    setSavingSettings(true);
+    try {
+      await api.put('/admin/store-info', {
+        business_name: businessName,
+        whatsapp_phone: whatsappPhone,
+        currency
+      });
+      setShowSettingsModal(false);
+      alert("Website name and settings updated successfully!");
+      window.location.reload();
+    } catch (err) {
+      alert("Failed to update website settings.");
+    } finally {
+      setSavingSettings(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -51,13 +78,23 @@ export default function AdminDashboard() {
           <p className="text-xs text-slate-500">Real-time overview of clothing inventory, active reservations, and sales</p>
         </div>
         
-        <Link
-          to="/admin/sales"
-          className="inline-flex items-center gap-2 bg-rose-500 hover:bg-rose-600 text-white text-xs font-extrabold px-4 py-2.5 rounded-full shadow-sm transition-all self-start sm:self-auto"
-        >
-          <ShoppingBag className="w-4 h-4" />
-          <span>+ Record Sale or Reservation</span>
-        </Link>
+        <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+          <button
+            onClick={() => setShowSettingsModal(true)}
+            className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-3.5 py-2.5 rounded-full shadow-sm transition-all"
+          >
+            <Settings className="w-4 h-4 text-rose-400" />
+            <span>Edit Website Name</span>
+          </button>
+
+          <Link
+            to="/admin/sales"
+            className="inline-flex items-center gap-2 bg-rose-500 hover:bg-rose-600 text-white text-xs font-extrabold px-4 py-2.5 rounded-full shadow-sm transition-all"
+          >
+            <ShoppingBag className="w-4 h-4" />
+            <span>+ Record Sale or Reservation</span>
+          </Link>
+        </div>
       </div>
 
       {/* KPI Cards Grid */}
@@ -253,6 +290,87 @@ export default function AdminDashboard() {
           </div>
         )}
       </div>
+
+      {/* Website Settings Modal */}
+      {showSettingsModal && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-6">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2">
+                <Globe className="w-5 h-5 text-rose-500" />
+                <h3 className="font-extrabold text-slate-900 text-base">Edit Website Name & Info</h3>
+              </div>
+              <button onClick={() => setShowSettingsModal(false)} className="p-1 text-slate-400 hover:text-slate-600 rounded-lg">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveSettings} className="space-y-4">
+              <div>
+                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-1">
+                  Website / Business Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={businessName}
+                  onChange={(e) => setBusinessName(e.target.value)}
+                  placeholder="e.g. Mama's Kids Apparel"
+                  className="w-full px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-rose-400 outline-hidden font-bold text-slate-900"
+                />
+                <span className="text-[10px] text-slate-400 mt-1 block">
+                  This title appears on the sidebar logo, mobile header, and website top bar.
+                </span>
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-1">
+                  WhatsApp Phone Number for Customer Orders
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={whatsappPhone}
+                  onChange={(e) => setWhatsappPhone(e.target.value)}
+                  placeholder="e.g. 254700000000"
+                  className="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-rose-400 outline-hidden font-semibold"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-1">
+                  Currency Symbol
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={currency}
+                  onChange={(e) => setCurrency(e.target.value)}
+                  placeholder="KSh"
+                  className="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-rose-400 outline-hidden font-bold"
+                />
+              </div>
+
+              <div className="pt-2 flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowSettingsModal(false)}
+                  className="flex-1 bg-slate-100 text-slate-600 font-bold py-2.5 rounded-xl text-xs"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={savingSettings}
+                  className="flex-1 bg-rose-500 hover:bg-rose-600 text-white font-extrabold py-2.5 rounded-xl text-xs shadow-sm transition-all"
+                >
+                  {savingSettings ? 'Saving...' : 'Save Changes'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
     </div>
   );

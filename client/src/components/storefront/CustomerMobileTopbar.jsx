@@ -20,8 +20,8 @@ export default function CustomerMobileTopbar({ onOpenMenu, storeInfo }) {
         <div className="w-8 h-8 rounded-xl bg-rose-500 flex items-center justify-center text-white shadow-xs">
           <ShoppingBag className="w-4 h-4" />
         </div>
-        <span className="font-extrabold text-base text-slate-900 tracking-tight">
-          Tiny<span className="text-rose-500">Trends</span>
+        <span className="font-extrabold text-sm text-slate-900 tracking-tight line-clamp-1 max-w-[180px]">
+          {storeInfo?.business_name || "TinyTrends Kids Wear"}
         </span>
       </Link>
 

@@ -40,10 +40,10 @@ export default function CustomerSidebar({ mobileOpen, setMobileOpen }) {
               <ShoppingBag className="w-5 h-5 text-white" />
             </div>
             <div>
-              <span className="font-extrabold text-xl text-slate-900 tracking-tight block leading-none">
-                Tiny<span className="text-rose-500">Trends</span>
+              <span className="font-extrabold text-lg text-slate-900 tracking-tight block leading-tight">
+                {storeInfo.business_name || "TinyTrends Kids Wear"}
               </span>
-              <span className="text-[10px] text-slate-500 font-semibold tracking-wider uppercase block mt-1">
+              <span className="text-[10px] text-slate-500 font-semibold tracking-wider uppercase block mt-0.5">
                 Kids Wear Store
               </span>
             </div>

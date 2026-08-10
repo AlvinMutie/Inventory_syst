@@ -7,6 +7,7 @@ from app.models.customer import Customer
 from app.models.order import Order, OrderItem
 from app.models.sale import Sale
 from app.models.transaction import InventoryTransaction
+from app.models.setting import StoreSetting
 
 __all__ = [
     'User',
@@ -20,5 +21,6 @@ __all__ = [
     'Order',
     'OrderItem',
     'Sale',
-    'InventoryTransaction'
+    'InventoryTransaction',
+    'StoreSetting'
 ]
