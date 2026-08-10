@@ -447,8 +447,24 @@ export default function AdminProducts() {
                   </label>
                   <select
                     value={categoryId}
-                    onChange={(e) => setCategoryId(e.target.value)}
-                    className="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-rose-400 outline-hidden"
+                    onChange={(e) => {
+                      const selectedId = e.target.value;
+                      setCategoryId(selectedId);
+                      const catObj = categories.find(c => c.id === parseInt(selectedId));
+                      if (catObj) {
+                        const slug = catObj.slug.toLowerCase();
+                        if (slug.includes('hoodie')) {
+                          setDescription("Cozy fleece hoodie featuring a front kangaroo pocket, ribbed cuffs, and warm soft inner lining. Gentle on sensitive skin.");
+                          setCostPrice(200);
+                          setSellingPrice(380);
+                        } else if (slug.includes('sweat') || slug.includes('jogger')) {
+                          setDescription("Comfortable fleece joggers with ribbed ankle cuffs, deep side pockets, and elastic drawstring waistband for all-day play.");
+                          setCostPrice(150);
+                          setSellingPrice(280);
+                        }
+                      }
+                    }}
+                    className="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-rose-400 outline-hidden font-bold"
                   >
                     {categories.map((c) => (
                       <option key={c.id} value={c.id}>{c.name}</option>

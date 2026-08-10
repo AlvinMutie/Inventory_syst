@@ -3,9 +3,9 @@ from app.extensions import db
 from app.models import User, Category, Size, Colour, Product, ProductImage, ProductVariant, InventoryTransaction, Order, Sale
 
 def seed_database():
-    print("🌱 Seeding database with all 58 physical clothing items from mum's inventory...")
+    print("🌱 Seeding database with 2 core categories: Hoodies and Sweatpants & Joggers...")
 
-    # Clear existing orders/sales/products for a fresh seed of all 58 items
+    # Clear existing data for fresh seed
     db.session.query(Sale).delete()
     db.session.query(Order).delete()
     db.session.query(InventoryTransaction).delete()
@@ -23,11 +23,10 @@ def seed_database():
         db.session.add(admin)
         print("  ✓ Created Admin user (admin / admin123)")
 
-    # 2. Core Categories
+    # 2. Exactly Two Core Categories
     categories_data = [
-        ('Hoodies', 'hoodies', 'Warm fleece pullover hoodies and zip-up sweaters'),
-        ('Sweatpants & Joggers', 'sweatpants', 'Comfortable fleece joggers and elastic waist trousers'),
-        ('Hoodie & Jogger Sets', 'tracksuits', '2-piece matching hoodie and sweatpant sets'),
+        ('Hoodies', 'hoodies', 'Cozy fleece pullover hoodies and zip-up hooded sweaters'),
+        ('Sweatpants & Joggers', 'sweatpants', 'Comfortable fleece joggers and elastic drawstring trousers'),
     ]
     category_map = {}
     for name, slug, desc in categories_data:
@@ -35,7 +34,7 @@ def seed_database():
         db.session.add(cat)
         db.session.flush()
         category_map[name] = cat
-    print("  ✓ Categories seeded")
+    print("  ✓ 2 Categories seeded: Hoodies & Sweatpants/Joggers")
 
     # 3. Sizes
     sizes_data = [
@@ -78,37 +77,33 @@ def seed_database():
 
     db.session.commit()
 
-    # 5. Generate 58 distinct physical items corresponding to inventor_01.jpg -> inventor_58.jpg
-    # Prices strictly KSh 250 - KSh 500, all IN STOCK
+    # 5. Generate 58 physical clothing items across the 2 categories
+    # Items 1 - 30: Hoodies
+    # Items 31 - 58: Sweatpants & Joggers
     colour_list = list(colour_map.keys())
     size_list = list(size_map.keys())
+
+    DEFAULT_HOODIE_DESC = "Cozy fleece hoodie featuring a front kangaroo pocket, ribbed cuffs, and warm soft inner lining. Gentle on sensitive skin."
+    DEFAULT_JOGGER_DESC = "Comfortable fleece joggers with ribbed ankle cuffs, deep side pockets, and elastic drawstring waistband for all-day play."
 
     for idx in range(1, 59):
         img_filename = f"/uploads/inventor_{idx:02d}.jpg"
 
-        if idx <= 24:
+        if idx <= 30:
             cat = category_map['Hoodies']
             base_name = f"Kids Fleece Hoodie Item #{idx}"
             slug = f"kids-fleece-hoodie-item-{idx}"
-            desc = "Cozy fleece pullover hoodie with kangaroo pocket and soft inner lining."
+            desc = DEFAULT_HOODIE_DESC
             cost = 200.0 + (idx % 5) * 10
             selling = 350.0 + (idx % 6) * 15 # KSh 350 - 425
-        elif idx <= 44:
+        else:
             cat = category_map['Sweatpants & Joggers']
             base_name = f"Kids Jogger Sweatpants Item #{idx}"
             slug = f"kids-jogger-sweatpants-item-{idx}"
-            desc = "Comfortable fleece joggers with ribbed ankle cuffs and elastic drawstring waistband."
+            desc = DEFAULT_JOGGER_DESC
             cost = 150.0 + (idx % 5) * 10
             selling = 250.0 + (idx % 6) * 15 # KSh 250 - 325
-        else:
-            cat = category_map['Hoodie & Jogger Sets']
-            base_name = f"Kids Hoodie & Jogger Set Item #{idx}"
-            slug = f"kids-hoodie-jogger-set-item-{idx}"
-            desc = "Matching 2-piece fleece outfit set featuring hoodie sweater and elastic waist sweatpants."
-            cost = 280.0 + (idx % 4) * 10
-            selling = 450.0 + (idx % 4) * 15 # KSh 450 - 495
 
-        # Cap max selling price at 500
         selling = min(500.0, selling)
 
         product = Product(
@@ -125,7 +120,7 @@ def seed_database():
         db.session.add(product)
         db.session.flush()
 
-        # Add image
+        # Add primary image
         img = ProductImage(
             product_id=product.id,
             image_url=img_filename,
@@ -134,7 +129,7 @@ def seed_database():
         )
         db.session.add(img)
 
-        # Generate 2-3 variant combinations per product (e.g. Black 4-5, Grey 6-7)
+        # Generate variant stock per item
         c1 = colour_list[idx % len(colour_list)]
         c2 = colour_list[(idx + 2) % len(colour_list)]
         s1 = size_list[idx % len(size_list)]
@@ -167,5 +162,5 @@ def seed_database():
             db.session.add(tx)
 
     db.session.commit()
-    print("  ✓ All 58 physical clothing items successfully seeded into database (Prices: KSh 250 - KSh 500, 100% IN STOCK)!")
+    print("  ✓ 58 physical clothing items seeded across Hoodies & Sweatpants (Prices: KSh 250 - KSh 500, 100% IN STOCK)!")
     print("🎉 Database seeding complete!")
