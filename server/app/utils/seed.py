@@ -3,7 +3,7 @@ from app.extensions import db
 from app.models import User, Category, Size, Colour, Product, ProductImage, ProductVariant, InventoryTransaction, Order, Sale
 
 def seed_database():
-    print("🌱 Seeding database with 2 core categories: Hoodies and Sweatpants & Joggers...")
+    print("🌱 Seeding database with exactly 58 physical clothing pieces (1 unit per item)...")
 
     # Clear existing data for fresh seed
     db.session.query(Sale).delete()
@@ -77,9 +77,7 @@ def seed_database():
 
     db.session.commit()
 
-    # 5. Generate 58 physical clothing items across the 2 categories
-    # Items 1 - 30: Hoodies
-    # Items 31 - 58: Sweatpants & Joggers
+    # 5. Generate 58 physical clothing items (1 piece per photo, 58 total units in stock)
     colour_list = list(colour_map.keys())
     size_list = list(size_map.keys())
 
@@ -91,15 +89,15 @@ def seed_database():
 
         if idx <= 30:
             cat = category_map['Hoodies']
-            base_name = f"Kids Fleece Hoodie Item #{idx}"
-            slug = f"kids-fleece-hoodie-item-{idx}"
+            base_name = f"Kids Fleece Hoodie Piece #{idx}"
+            slug = f"kids-fleece-hoodie-piece-{idx}"
             desc = DEFAULT_HOODIE_DESC
             cost = 200.0 + (idx % 5) * 10
             selling = 350.0 + (idx % 6) * 15 # KSh 350 - 425
         else:
             cat = category_map['Sweatpants & Joggers']
-            base_name = f"Kids Jogger Sweatpants Item #{idx}"
-            slug = f"kids-jogger-sweatpants-item-{idx}"
+            base_name = f"Kids Jogger Sweatpants Piece #{idx}"
+            slug = f"kids-jogger-sweatpants-piece-{idx}"
             desc = DEFAULT_JOGGER_DESC
             cost = 150.0 + (idx % 5) * 10
             selling = 250.0 + (idx % 6) * 15 # KSh 250 - 325
@@ -113,7 +111,7 @@ def seed_database():
             category_id=cat.id,
             cost_price=cost,
             selling_price=selling,
-            low_stock_threshold=2,
+            low_stock_threshold=1,
             is_published=True,
             is_featured=(idx % 4 == 0)
         )
@@ -129,38 +127,32 @@ def seed_database():
         )
         db.session.add(img)
 
-        # Generate variant stock per item
-        c1 = colour_list[idx % len(colour_list)]
-        c2 = colour_list[(idx + 2) % len(colour_list)]
-        s1 = size_list[idx % len(size_list)]
-        s2 = size_list[(idx + 1) % len(size_list)]
+        # EXACTLY 1 PIECE PER ITEM (1 variant with quantity = 1)
+        col_name = colour_list[idx % len(colour_list)]
+        sz_name = size_list[idx % len(size_list)]
+        sku = f"PIECE{idx:02d}-{col_name[:3].upper()}-{sz_name}"
 
-        var_combos = [(c1, s1, 5 + (idx % 4)), (c2, s2, 4 + (idx % 3))]
+        variant = ProductVariant(
+            product_id=product.id,
+            size_id=size_map[sz_name].id,
+            colour_id=colour_map[col_name].id,
+            quantity=1,
+            reserved_quantity=0,
+            sku=sku
+        )
+        db.session.add(variant)
+        db.session.flush()
 
-        for col_name, sz_name, qty in var_combos:
-            sku = f"ITEM{idx:02d}-{col_name[:3].upper()}-{sz_name}"
-
-            variant = ProductVariant(
-                product_id=product.id,
-                size_id=size_map[sz_name].id,
-                colour_id=colour_map[col_name].id,
-                quantity=qty,
-                reserved_quantity=0,
-                sku=sku
-            )
-            db.session.add(variant)
-            db.session.flush()
-
-            tx = InventoryTransaction(
-                variant_id=variant.id,
-                transaction_type='STOCK_IN',
-                quantity_change=qty,
-                previous_quantity=0,
-                new_quantity=qty,
-                notes='Initial physical stock arrival'
-            )
-            db.session.add(tx)
+        tx = InventoryTransaction(
+            variant_id=variant.id,
+            transaction_type='STOCK_IN',
+            quantity_change=1,
+            previous_quantity=0,
+            new_quantity=1,
+            notes='Initial physical piece stock arrival'
+        )
+        db.session.add(tx)
 
     db.session.commit()
-    print("  ✓ 58 physical clothing items seeded across Hoodies & Sweatpants (Prices: KSh 250 - KSh 500, 100% IN STOCK)!")
+    print("  ✓ Exactly 58 physical clothing pieces seeded into database (Total stock = 58 units, Prices: KSh 250 - KSh 500)!")
     print("🎉 Database seeding complete!")

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, MessageCircle, CheckCircle2, XCircle, AlertCircle, Share2, Sparkles } from 'lucide-react';
+import { ArrowLeft, MessageCircle, CheckCircle2, XCircle, AlertCircle, Share2, Sparkles, Ruler, X, ShieldCheck } from 'lucide-react';
 import api from '../../services/api';
 import { createWhatsAppOrderLink } from '../../utils/whatsapp';
 
@@ -13,6 +13,7 @@ export default function ProductDetail() {
   const [selectedSize, setSelectedSize] = useState(null);
   const [storeInfo, setStoreInfo] = useState({ currency: 'KSh', whatsapp_phone: '254700000000' });
   const [copied, setCopied] = useState(false);
+  const [showSizeGuide, setShowSizeGuide] = useState(false);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -97,7 +98,8 @@ export default function ProductDetail() {
     selectedColour,
     selectedSize,
     currentPrice,
-    storeInfo.currency
+    storeInfo.currency,
+    currentVariant?.sku || ''
   );
 
   const handleShare = () => {
@@ -118,19 +120,21 @@ export default function ProductDetail() {
           onClick={handleShare}
           className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-rose-600 bg-white border border-slate-200 px-3 py-1.5 rounded-full transition-all"
         >
-          <Share2 className="w-3.5 h-3.5" />
-          <span>{copied ? 'Link Copied!' : 'Share Product'}</span>
+          <Share2 className="w-3.5 h-3.5 text-rose-500" />
+          <span>{copied ? 'Link Copied!' : 'Share Item'}</span>
         </button>
       </div>
 
-      <div className="bg-white rounded-3xl border border-slate-100 p-4 sm:p-8 shadow-sm grid grid-cols-1 md:grid-cols-2 gap-8">
+      {/* Main Product Layout */}
+      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-2xs grid grid-cols-1 md:grid-cols-2 gap-8">
         
         {/* Left Column: Image Gallery */}
         <div className="space-y-4">
-          <div className="aspect-square bg-slate-100 rounded-2xl overflow-hidden relative shadow-inner">
+          <div className="aspect-square rounded-2xl overflow-hidden bg-slate-100 border border-slate-200/80 relative">
             <img
               src={selectedImage || product.primary_image || 'https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=800&auto=format&fit=crop&q=80'}
               alt={product.name}
+              loading="lazy"
               onError={(e) => {
                 e.target.onerror = null;
                 e.target.src = 'https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=800&auto=format&fit=crop&q=80';
@@ -150,7 +154,7 @@ export default function ProductDetail() {
                     selectedImage === img.image_url ? 'border-rose-500 scale-95 shadow-xs' : 'border-slate-100 opacity-70 hover:opacity-100'
                   }`}
                 >
-                  <img src={img.image_url} alt="" className="w-full h-full object-cover" />
+                  <img src={img.image_url} alt="" loading="lazy" className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>
@@ -177,7 +181,7 @@ export default function ProductDetail() {
             </div>
 
             <p className="text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-3">
-              {product.description || "High quality children's clothing crafted for comfort and durability."}
+              {product.description || "High quality children's fleece clothing crafted for comfort and durability."}
             </p>
 
             {/* Colour Selector */}
@@ -207,33 +211,43 @@ export default function ProductDetail() {
               </div>
             )}
 
-            {/* Size Selector */}
+            {/* Size Selector + Size Guide Link */}
             {availableSizes.length > 0 && (
               <div className="space-y-2 pt-2">
-                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">
-                  Select Size: <span className="text-rose-600 font-extrabold">{selectedSize}</span>
-                </label>
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">
+                    Select Size: <span className="text-rose-600 font-extrabold">{selectedSize}</span>
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setShowSizeGuide(true)}
+                    className="text-[11px] font-bold text-rose-600 hover:text-rose-700 underline flex items-center gap-1"
+                  >
+                    <Ruler className="w-3.5 h-3.5" />
+                    <span>View Size & Age Guide</span>
+                  </button>
+                </div>
+
                 <div className="flex flex-wrap gap-2">
                   {availableSizes.map((size) => {
                     const isSelected = selectedSize === size;
-                    // Check stock status for this specific size with currently selected colour
                     const sizeVariant = product.variants.find(v => v.colour_name === selectedColour && v.size_name === size);
-                    const sizeAvail = sizeVariant ? sizeVariant.available_quantity > 0 : false;
+                    const isAvailable = sizeVariant && sizeVariant.available_quantity > 0;
 
                     return (
                       <button
                         key={size}
+                        disabled={!isAvailable}
                         onClick={() => setSelectedSize(size)}
-                        className={`px-4 py-2 rounded-xl text-xs font-bold border transition-all flex items-center gap-1.5 ${
+                        className={`px-4 py-2 rounded-xl text-xs font-bold border transition-all ${
                           isSelected
                             ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
-                            : sizeAvail
-                              ? 'bg-white text-slate-800 border-slate-200 hover:border-rose-300'
-                              : 'bg-slate-100 text-slate-400 border-slate-200 line-through opacity-70'
+                            : isAvailable
+                              ? 'bg-slate-50 text-slate-800 border-slate-200 hover:border-slate-400'
+                              : 'bg-slate-100 text-slate-400 border-slate-200 line-through cursor-not-allowed opacity-60'
                         }`}
                       >
-                        <span>Size {size}</span>
-                        {!sizeAvail && <span className="text-[9px] font-normal text-rose-500">(Sold Out)</span>}
+                        {size}
                       </button>
                     );
                   })}
@@ -241,62 +255,117 @@ export default function ProductDetail() {
               </div>
             )}
 
-            {/* Variant Availability Card */}
-            <div className="p-4 rounded-2xl border bg-slate-50/50 mt-4 space-y-1">
-              <div className="flex items-center justify-between text-xs font-semibold">
-                <span className="text-slate-500">Availability ({selectedColour || ''} / Size {selectedSize || ''}):</span>
-                {isVariantAvailable ? (
-                  isVariantLowStock ? (
-                    <span className="inline-flex items-center gap-1 text-amber-600 font-bold bg-amber-50 px-2.5 py-1 rounded-full">
-                      <AlertCircle className="w-3.5 h-3.5" />
-                      <span>Low Stock ({variantStockCount} left)</span>
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center gap-1 text-emerald-600 font-bold bg-emerald-50 px-2.5 py-1 rounded-full">
-                      <CheckCircle2 className="w-3.5 h-3.5" />
-                      <span>Available ({variantStockCount} in stock)</span>
-                    </span>
-                  )
-                ) : (
-                  <span className="inline-flex items-center gap-1 text-rose-600 font-bold bg-rose-50 px-2.5 py-1 rounded-full">
-                    <XCircle className="w-3.5 h-3.5" />
-                    <span>Sold Out</span>
-                  </span>
-                )}
-              </div>
+            {/* Stock Availability Indicator */}
+            <div className="pt-2">
+              {isVariantAvailable ? (
+                <div className="inline-flex items-center gap-2 text-emerald-600 font-bold text-xs bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-xl">
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>In Stock — Single piece available ({variantStockCount} item)</span>
+                </div>
+              ) : (
+                <div className="inline-flex items-center gap-2 text-rose-600 font-bold text-xs bg-rose-50 border border-rose-200 px-3 py-1.5 rounded-xl">
+                  <XCircle className="w-4 h-4" />
+                  <span>Item Currently Reserved / Sold</span>
+                </div>
+              )}
             </div>
 
           </div>
 
-          {/* Main Action CTA: Order via WhatsApp */}
-          <div className="space-y-2 pt-4 border-t border-slate-100">
-            {isVariantAvailable ? (
-              <a
-                href={whatsAppUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="w-full inline-flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 text-white font-extrabold px-6 py-4 rounded-2xl text-base shadow-lg shadow-emerald-100 hover:shadow-xl transition-all scale-100 active:scale-98"
-              >
-                <MessageCircle className="w-5 h-5 fill-white" />
-                <span>Order via WhatsApp</span>
-              </a>
-            ) : (
-              <button
-                disabled
-                className="w-full inline-flex items-center justify-center gap-2 bg-slate-200 text-slate-400 font-bold px-6 py-4 rounded-2xl text-sm cursor-not-allowed"
-              >
-                <XCircle className="w-5 h-5" />
-                <span>Selected Variant Sold Out</span>
-              </button>
-            )}
+          {/* Action Buttons: WhatsApp Order CTA */}
+          <div className="pt-6 border-t border-slate-100 space-y-3">
+            <a
+              href={isVariantAvailable ? whatsAppUrl : '#'}
+              target="_blank"
+              rel="noreferrer"
+              onClick={(e) => !isVariantAvailable && e.preventDefault()}
+              className={`w-full flex items-center justify-center gap-2 text-white font-extrabold py-3.5 px-6 rounded-2xl text-sm shadow-md transition-all ${
+                isVariantAvailable
+                  ? 'bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 shadow-emerald-200 scale-100 hover:scale-[1.01]'
+                  : 'bg-slate-300 cursor-not-allowed shadow-none'
+              }`}
+            >
+              <MessageCircle className="w-5 h-5 fill-white" />
+              <span>{isVariantAvailable ? 'Order via WhatsApp' : 'Currently Out of Stock'}</span>
+            </a>
 
-            <p className="text-[11px] text-slate-400 text-center">
-              🔒 No online payment required. Tap to send product details directly to the business owner on WhatsApp.
-            </p>
+            <div className="flex items-center justify-between text-[11px] text-slate-500 font-medium px-1">
+              <span>💳 Zero Online Payment — Pay on delivery / pickup</span>
+              <span>⚡ Direct WhatsApp Chat</span>
+            </div>
           </div>
 
         </div>
+
       </div>
+
+      {/* Size & Age Guide Modal */}
+      {showSizeGuide && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2">
+                <Ruler className="w-5 h-5 text-rose-500" />
+                <h3 className="font-extrabold text-slate-900 text-base">Kids Size & Age Guide</h3>
+              </div>
+              <button onClick={() => setShowSizeGuide(false)} className="p-1 text-slate-400 hover:text-slate-600 rounded-lg">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <p className="text-xs text-slate-500">
+              Use this standard sizing table to pick the correct fleece fit for your child:
+            </p>
+
+            <div className="overflow-x-auto border border-slate-200 rounded-2xl">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[10px] font-bold">
+                    <th className="py-2.5 px-3">Size Label</th>
+                    <th className="py-2.5 px-3">Age Range</th>
+                    <th className="py-2.5 px-3">Height (cm)</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 text-slate-800 font-medium">
+                  <tr>
+                    <td className="py-2 px-3 font-bold text-rose-600">2-3</td>
+                    <td className="py-2 px-3">2 - 3 Years</td>
+                    <td className="py-2 px-3">92 - 98 cm</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 px-3 font-bold text-rose-600">4-5</td>
+                    <td className="py-2 px-3">4 - 5 Years</td>
+                    <td className="py-2 px-3">104 - 110 cm</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 px-3 font-bold text-rose-600">6-7</td>
+                    <td className="py-2 px-3">6 - 7 Years</td>
+                    <td className="py-2 px-3">116 - 122 cm</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 px-3 font-bold text-rose-600">8-10</td>
+                    <td className="py-2 px-3">8 - 10 Years</td>
+                    <td className="py-2 px-3">128 - 140 cm</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 px-3 font-bold text-rose-600">11-12</td>
+                    <td className="py-2 px-3">11 - 12 Years</td>
+                    <td className="py-2 px-3">146 - 152 cm</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <button
+              onClick={() => setShowSizeGuide(false)}
+              className="w-full bg-slate-900 text-white font-bold py-2.5 rounded-xl text-xs"
+            >
+              Close Size Guide
+            </button>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

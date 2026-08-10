@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit3, Trash2, Eye, EyeOff, X, Image as ImageIcon, Sparkles, Check, AlertCircle } from 'lucide-react';
+import { Plus, Edit3, Trash2, Eye, EyeOff, X, Image as ImageIcon, Sparkles, Check, AlertCircle, Share2 } from 'lucide-react';
 import api from '../../services/api';
 
 export default function AdminProducts() {
@@ -377,7 +377,18 @@ export default function AdminProducts() {
                       </button>
                     </td>
 
-                    <td className="py-3 px-4 text-right space-x-2">
+                    <td className="py-3 px-4 text-right space-x-1">
+                      <button
+                        onClick={() => {
+                          const url = `${window.location.origin}/products/${product.slug}`;
+                          navigator.clipboard.writeText(url);
+                          alert(`Copied product link for Instagram / TikTok:\n${url}`);
+                        }}
+                        className="p-1.5 text-slate-500 hover:text-rose-600 hover:bg-slate-100 rounded-lg transition-colors"
+                        title="Copy Link for Instagram / TikTok"
+                      >
+                        <Share2 className="w-4 h-4 text-rose-500" />
+                      </button>
                       <button
                         onClick={() => openEditModal(product)}
                         className="p-1.5 text-slate-500 hover:text-rose-600 hover:bg-slate-100 rounded-lg transition-colors"
