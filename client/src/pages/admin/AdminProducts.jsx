@@ -247,6 +247,26 @@ export default function AdminProducts() {
     }
   };
 
+  const handleQuickCategoryChange = async (productId, newCategoryId) => {
+    try {
+      const catId = newCategoryId ? parseInt(newCategoryId) : null;
+      await api.put(`/admin/products/${productId}`, { category_id: catId });
+      setProducts(prev => prev.map(p => {
+        if (p.id === productId) {
+          const catObj = categories.find(c => c.id === catId);
+          return {
+            ...p,
+            category_id: catId,
+            category_name: catObj ? catObj.name : 'Uncategorized'
+          };
+        }
+        return p;
+      }));
+    } catch (err) {
+      alert("Failed to move category.");
+    }
+  };
+
   // Potential Profit Calculations for Modal
   const totalModalUnits = variantMatrix.reduce((sum, v) => sum + (parseInt(v.quantity) || 0), 0);
   const potentialRev = totalModalUnits * parseFloat(sellingPrice || 0);
@@ -260,7 +280,7 @@ export default function AdminProducts() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Product & Variant Management</h1>
-          <p className="text-xs text-slate-500">Create products, build size/colour matrix variants, and manage public visibility</p>
+          <p className="text-xs text-slate-500">Edit product details, move clothes to categories, build size/colour variants, and manage visibility</p>
         </div>
 
         <button
@@ -282,7 +302,7 @@ export default function AdminProducts() {
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-200 text-slate-400 uppercase text-[10px] font-bold">
                   <th className="py-3 px-4">Product</th>
-                  <th className="py-3 px-4">Category</th>
+                  <th className="py-3 px-4">Move Category</th>
                   <th className="py-3 px-4">Cost Price</th>
                   <th className="py-3 px-4">Selling Price</th>
                   <th className="py-3 px-4">Stock Units</th>
@@ -309,7 +329,19 @@ export default function AdminProducts() {
                       </div>
                     </td>
 
-                    <td className="py-3 px-4 text-slate-600 font-medium">{product.category_name}</td>
+                    <td className="py-3 px-4">
+                      <select
+                        value={product.category_id || ''}
+                        onChange={(e) => handleQuickCategoryChange(product.id, e.target.value)}
+                        className="px-2.5 py-1 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-rose-400 outline-hidden font-semibold text-slate-800"
+                        title="Move to another category"
+                      >
+                        <option value="">-- No Category --</option>
+                        {categories.map((c) => (
+                          <option key={c.id} value={c.id}>{c.name}</option>
+                        ))}
+                      </select>
+                    </td>
 
                     <td className="py-3 px-4 text-slate-600">{currency} {product.cost_price.toLocaleString()}</td>
 
