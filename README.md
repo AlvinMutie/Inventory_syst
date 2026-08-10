@@ -6,13 +6,12 @@ A production-ready physical inventory management system and mobile-first online 
 
 ## Importance of the System
 
-Small independent clothing businesses—especially those selling children's fleece hoodies, sweatpants, and joggers—face significant operational friction when trying to expand online:
+Small independent clothing businesses—especially those selling children's fleece hoodies, sweatpants, and joggers—face operational challenges when expanding online:
 
-1. **Transaction Fees & Gateway Friction**: Standard e-commerce platforms force online payment gateway integrations (M-Pesa API fees, card processing, merchant registrations) that small sellers do not need. In regions like Kenya, most social-commerce customers prefer to confirm stock first and pay via direct M-Pesa or cash upon delivery/pickup.
-2. **Catalog Visibility**: Social media feeds (Instagram posts, TikTok videos) move fast, making it difficult for customers to see what physical pieces are currently available in specific sizes and colours.
-3. **Inventory Management Overhead**: Managing physical stock across multiple social channels leads to double-selling, manual customer message back-and-forth, and lost sales.
+1. **Catalog Visibility**: Social media feeds (Instagram posts, TikTok videos) move fast, making it difficult for customers to see what physical pieces are currently available in specific sizes and colours.
+2. **Inventory Management Overhead**: Managing physical stock across multiple social channels leads to double-selling, manual customer message back-and-forth, and lost sales.
 
-This system bridges physical stock management with an online showcase catalog, allowing business owners to run a digital shop with **zero online payment gateway requirements**.
+This system bridges physical stock management with an online showcase catalog, allowing business owners to showcase available stock online and communicate directly with customers via WhatsApp.
 
 ---
 
