@@ -146,8 +146,8 @@ export default function CustomerSidebar({ mobileOpen, setMobileOpen }) {
         </div>
       </div>
 
-      {/* Footer Contact & Admin Action */}
-      <div className="pt-4 border-t border-slate-100 space-y-2">
+      {/* Footer Contact */}
+      <div className="pt-4 border-t border-slate-100">
         <a
           href={`https://wa.me/${storeInfo.whatsapp_phone}?text=${encodeURIComponent("Hello! I would like to inquire about your kids clothing catalog.")}`}
           target="_blank"
@@ -157,15 +157,6 @@ export default function CustomerSidebar({ mobileOpen, setMobileOpen }) {
           <Phone className="w-4 h-4 fill-white" />
           <span>Contact via WhatsApp</span>
         </a>
-
-        <Link
-          to="/admin"
-          onClick={closeMobile}
-          className="w-full inline-flex items-center justify-center gap-1.5 text-slate-500 hover:text-rose-600 hover:bg-slate-100 py-2 rounded-xl text-xs font-semibold transition-colors"
-        >
-          <ShieldCheck className="w-4 h-4 text-rose-500" />
-          <span>Owner Admin Portal</span>
-        </Link>
       </div>
 
     </div>

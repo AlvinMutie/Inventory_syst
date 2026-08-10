@@ -200,10 +200,10 @@ export default function ProductDetail() {
                       <button
                         key={colour}
                         onClick={() => setSelectedColour(colour)}
-                        className={`px-3.5 py-1.5 rounded-full text-xs font-semibold border flex items-center gap-2 transition-all ${
+                        className={`px-4 py-2 rounded-xl text-xs font-semibold border flex items-center gap-2 transition-all ${
                           isSelected
-                            ? 'bg-rose-500 text-white border-rose-500 shadow-xs font-bold'
-                            : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-rose-300'
+                            ? 'bg-slate-900 text-white border-slate-900 shadow-xs font-extrabold ring-2 ring-rose-400 ring-offset-1'
+                            : 'bg-white text-slate-700 border-slate-200 hover:border-slate-400'
                         }`}
                       >
                         <span

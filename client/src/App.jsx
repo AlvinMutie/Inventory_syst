@@ -70,6 +70,19 @@ function ProtectedRoute({ children }) {
 }
 
 export default function App() {
+  // Secret Keyboard Shortcut: Ctrl + Shift + M (or Cmd + Shift + M) to open Admin Portal
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'm') {
+        e.preventDefault();
+        alert("🔒 Secret shortcut activated! Opening Admin Portal...");
+        window.location.href = '/admin';
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   return (
     <AuthProvider>
       <BrowserRouter>
